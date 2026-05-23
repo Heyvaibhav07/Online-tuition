@@ -1,0 +1,6 @@
+{
+  "name": "Tuition Portal and Dashboard",
+  "description": "An interactive child-friendly cartoon tuition portal for Class 1 to 10 students and parents, featuring animated video platforms, study playrooms, simulated classrooms, badges, mini-quiz games, and automatic metrics tracking.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

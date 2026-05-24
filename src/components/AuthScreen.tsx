@@ -48,7 +48,17 @@ export default function AuthScreen({ onAuthSuccess, onViewDemoRequested }: AuthS
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email, password })
       });
-      const data = await response.json();
+      
+      const contentType = response.headers.get('content-type');
+      let data: any = {};
+      if (contentType && contentType.includes('application/json')) {
+        data = await response.json();
+      } else {
+        const text = await response.text();
+        const cleanText = text.length > 80 ? text.substring(0, 80) + '...' : text;
+        throw new Error(`The server is currently initializing or returned an invalid page: "${cleanText || 'Unknown Status'}". Please try again shortly or use the quick login buttons.`);
+      }
+      
       if (!response.ok) {
         throw new Error(data.error || 'Authentication failed.');
       }
@@ -84,7 +94,17 @@ export default function AuthScreen({ onAuthSuccess, onViewDemoRequested }: AuthS
           wardId: role === 'parent' ? 'user-student-1' : undefined
         })
       });
-      const data = await response.json();
+      
+      const contentType = response.headers.get('content-type');
+      let data: any = {};
+      if (contentType && contentType.includes('application/json')) {
+        data = await response.json();
+      } else {
+        const text = await response.text();
+        const cleanText = text.length > 80 ? text.substring(0, 80) + '...' : text;
+        throw new Error(`Server returned non-JSON page: "${cleanText || 'Empty page'}".`);
+      }
+      
       if (!response.ok) {
         throw new Error(data.error || 'Registration failed.');
       }
@@ -406,6 +426,38 @@ export default function AuthScreen({ onAuthSuccess, onViewDemoRequested }: AuthS
               <span>{loading ? 'Processing...' : isLogin ? 'Access Dashboard' : 'Complete Registration'}</span>
               <ArrowRight className="h-4 w-4" />
             </button>
+
+            {/* Quick Prefill Buttons */}
+            {isLogin && (
+              <div className="bg-indigo-50/50 rounded-2xl p-3 border border-indigo-100/50 mt-4 text-center space-y-2">
+                <span className="text-[10px] text-indigo-700 font-extrabold tracking-wider uppercase block">
+                  👉 Quick Demo Accounts (Click to Prefill)
+                </span>
+                <div className="flex flex-wrap gap-1.5 justify-center">
+                  <button
+                    type="button"
+                    onClick={() => handleQuickPrefill('student')}
+                    className="bg-white hover:bg-indigo-100/50 border border-indigo-200/50 text-indigo-700 text-[10px] font-bold py-1 px-2.5 rounded-lg transition-all active:scale-95 cursor-pointer"
+                  >
+                    Student (Vaibhav)
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => handleQuickPrefill('teacher')}
+                    className="bg-white hover:bg-indigo-100/50 border border-indigo-200/50 text-indigo-700 text-[10px] font-bold py-1 px-2.5 rounded-lg transition-all active:scale-95 cursor-pointer"
+                  >
+                    Teacher (Neha)
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => handleQuickPrefill('parent')}
+                    className="bg-white hover:bg-indigo-100/50 border border-indigo-200/50 text-indigo-700 text-[10px] font-bold py-1 px-2.5 rounded-lg transition-all active:scale-95 cursor-pointer"
+                  >
+                    Parent (Rajesh)
+                  </button>
+                </div>
+              </div>
+            )}
           </form>
 
           {/* Simple Testimonials in Login form footer */}
